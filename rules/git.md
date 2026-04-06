@@ -65,7 +65,37 @@ hotfix/* ──────────────────→ main (tag)
 ## Push 정책
 
 - `main`에 force push 금지
-- push 전 `git status` / `git diff`로 변경사항 확인
+- **push 요청 시 Claude가 반드시 아래 절차를 수행한 후 사용자 확인을 받고 push한다**
+
+### Push 전 필수 절차
+
+push 요청을 받으면 즉시 push하지 않고, 다음 순서로 진행한다:
+
+1. **민감 정보 검토** — 아래 항목을 스캔하여 이상 없는지 확인
+   - API 키, 토큰, 비밀번호 패턴 (`sk-`, `Bearer `, `password`, `secret` 등)
+   - 절대 경로 (`C:/Users/...`, `/home/...`, `/Users/...`)
+   - `.env`, `credentials`, `secret` 등 민감 파일명
+   - gitignore 대상 파일이 스테이징에 포함되어 있지는 않은지
+
+2. **변경 사항 리포트** — 아래 형식으로 사용자에게 보고
+
+   ```
+   === Push 전 검토 리포트 ===
+
+   브랜치: feat/xxx → origin/feat/xxx
+
+   [변경 파일]
+   - M  src/components/Header.tsx   (수정)
+   - A  src/utils/helpers.ts        (추가)
+   - D  src/old/legacy.ts           (삭제)
+
+   [민감 정보 검토]
+   - 이상 없음 / 또는 발견된 항목 명시
+
+   push를 진행할까요?
+   ```
+
+3. **사용자 확인 후 push** — 사용자가 재확인하면 그때 push 실행
 
 ## 커밋 분리 원칙
 
